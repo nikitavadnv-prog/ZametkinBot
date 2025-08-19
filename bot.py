@@ -1,4 +1,4 @@
-from telegram import Update
+from telegram import Update, Bot
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 from database import init_db, add_training
 from notifications import start_notifications
@@ -6,9 +6,6 @@ import config
 
 # Инициализация базы данных
 init_db()
-
-# Запуск уведомлений
-start_notifications(Bot(token=config.TOKEN))
 
 def start(update: Update, context: CallbackContext):
     update.message.reply_text("Привет! Я бот для записи на тренировки. Используй /add для добавления клиента.")
@@ -35,6 +32,9 @@ dispatcher = updater.dispatcher
 dispatcher.add_handler(CommandHandler("start", start))
 dispatcher.add_handler(CommandHandler("add", add_client))
 dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))
+
+# Запуск уведомлений (после создания бота)
+start_notifications(updater.bot)
 
 # Запуск бота
 if __name__ == '__main__':
